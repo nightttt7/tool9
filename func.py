@@ -3,6 +3,8 @@ __all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'var', 'es',
 
 
 # ----------------------------------------------------------------------------
+
+
 # function period, return the effective date period of one column
 def period(col, data):
     start = data[col].first_valid_index()
