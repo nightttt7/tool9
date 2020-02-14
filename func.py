@@ -141,7 +141,7 @@ def portfolio_risk(data_corr, data_vol, data_ratio):
 # ----------------------------------------------------------------------------
 
 
-# function: period_4_plot
+# function period_4_plot
 def period_4_plot(start, end, n):
     import pandas as pd
     df = pd.DataFrame([[start, n], [end, n]])

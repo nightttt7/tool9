@@ -43,7 +43,7 @@ class RRP(object):
             will be set so that portfolio risk will equal to the target_risk
         leverage_fixed: number, !!if provided, the leverage of portfolio will
             not change and always be it
-        leverage_limit = number, if provided, leverage won't be higher than it
+        leverage_limit: number, if provided, leverage won't be higher than it
         get_actual: default False, get actual ratio, portfolio risk and actual
             portfolio risk
 
