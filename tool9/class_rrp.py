@@ -5,9 +5,9 @@ from datetime import timedelta
 import pandas as pd
 from pandas.api.types import is_datetime64_any_dtype
 import numpy as np
-from func import portfolio_risk, period, es
-from customized_exceptions import (DataFrameError, InputError, DateValueError,
-                                   UnfinishedFeature)
+from .func import portfolio_risk, period, es
+from .customized_exceptions import (DataFrameError, InputError, DateValueError,
+                                    UnfinishedFeature)
 
 
 class RRP(object):
