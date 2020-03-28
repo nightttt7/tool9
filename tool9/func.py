@@ -5,8 +5,10 @@ __all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'var', 'es',
 # ----------------------------------------------------------------------------
 
 
-# function period, return the effective date period of one column
 def period(col, data):
+    """
+    return the effective date period of one column
+    """
     start = data[col].first_valid_index()
     end = data[col].sort_index(ascending=False).first_valid_index()
     return([start, end])
@@ -15,8 +17,10 @@ def period(col, data):
 # ----------------------------------------------------------------------------
 
 
-# function describe
 def describe(col, data):
+    """
+    return basic statistical descriptions
+    """
     import pandas as pd
     d = {}
     # number of observations
