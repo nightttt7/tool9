@@ -1,4 +1,4 @@
-# TODO: change this file for unittest
+# manual test
 
 # %%
 import pandas as pd
@@ -38,3 +38,6 @@ portfolio1 = RRP(ratio_fixed=None, logr=logr, risk=risk, corr=corr,
                  first_reset_date=first_reset_date, reset_months=reset_months,
                  reset_shift_mode='after', target_risk=target_risk,
                  leverage_fixed=None, leverage_limit=None, get_actual=True)
+
+
+# %%
