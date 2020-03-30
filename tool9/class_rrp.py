@@ -133,20 +133,21 @@ class RRP(object):
             self.get_actual = kw['get_actual']
 
     def check_inputs(self):
-        if len(self.logr) != len(self.risk):
-            raise DataFrameError('"logr" and "risk" have different length')
+        # FIXME: if risk is not given, there wil be a error
+        # if len(self.logr) != len(self.risk):
+        #     raise DataFrameError('"logr" and "risk" have different length')
         if self.logr.shape[1] < 2:
             raise DataFrameError('"logr" must have more than 2 columns')
-        if self.risk.shape[1] < 2:
-            raise DataFrameError('"risk" must have more than 2 columns')
-        if self.logr.shape[1] != self.risk.shape[1]:
-            raise DataFrameError('"logr" and "risk" have different col number')
+        # if self.risk.shape[1] < 2:
+        #     raise DataFrameError('"risk" must have more than 2 columns')
+        # if self.logr.shape[1] != self.risk.shape[1]:
+        #     raise DataFrameError('"logr" and "risk" have different col number')
         if not is_datetime64_any_dtype(self.logr.index):
             raise DataFrameError('the index of "logr" is not datetime')
-        if not is_datetime64_any_dtype(self.risk.index):
-            raise DataFrameError('the index of "risk" is not datetime')
-        if (self.logr.index != self.risk.index).sum():
-            raise DataFrameError('"logr" and "risk" have different index')
+        # if not is_datetime64_any_dtype(self.risk.index):
+        #     raise DataFrameError('the index of "risk" is not datetime')
+        # if (self.logr.index != self.risk.index).sum():
+        #     raise DataFrameError('"logr" and "risk" have different index')
         # FIXME: is_datetime64_any_dtype(timestamp) is False
         # if not (isinstance(self.first_reset_date, str) or
         #         is_datetime64_any_dtype(self.first_reset_date)):
