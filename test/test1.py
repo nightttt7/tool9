@@ -33,3 +33,15 @@ class TestMonthint(unittest.TestCase):
 
     def tearDown(self):
         return None
+
+
+class TestInput(unittest.TestCase):
+
+    def setUp(self):
+        return None
+
+    def test_0(self):
+        return None
+
+    def tearDown(self):
+        return None

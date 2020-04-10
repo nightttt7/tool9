@@ -115,6 +115,8 @@ class RRP(object):
             self.corr = kw['corr']
         if 'first_reset_date' in kw:
             self.first_reset_date = kw['first_reset_date']
+            if self.first_reset_date is None:
+                self.first_reset_date = self.logr.index[0]
         else:
             self.first_reset_date = self.logr.index[0]
         if 'reset_months' in kw:
@@ -133,34 +135,35 @@ class RRP(object):
             self.get_actual = kw['get_actual']
 
     def check_inputs(self):
-        # FIXME: if risk is not given, there wil be a error
-        # if len(self.logr) != len(self.risk):
-        #     raise DataFrameError('"logr" and "risk" have different length')
+        if self.risk is not None:
+            if len(self.logr) != len(self.risk):
+                raise DataFrameError('"logr" and "risk" have different length')
+            if self.risk.shape[1] < 2:
+                raise DataFrameError('"risk" must have more than 2 columns')
+            if self.logr.shape[1] != self.risk.shape[1]:
+                raise DataFrameError('"logr" and "risk" have different col')
+            if not is_datetime64_any_dtype(self.risk.index):
+                raise DataFrameError('the index of "risk" is not datetime')
+            if (self.logr.index != self.risk.index).sum():
+                raise DataFrameError('"logr" and "risk" have different index')
         if self.logr.shape[1] < 2:
             raise DataFrameError('"logr" must have more than 2 columns')
-        # if self.risk.shape[1] < 2:
-        #     raise DataFrameError('"risk" must have more than 2 columns')
-        # if self.logr.shape[1] != self.risk.shape[1]:
-        #     raise DataFrameError('"logr" and "risk" have different col number')
         if not is_datetime64_any_dtype(self.logr.index):
             raise DataFrameError('the index of "logr" is not datetime')
-        # if not is_datetime64_any_dtype(self.risk.index):
-        #     raise DataFrameError('the index of "risk" is not datetime')
-        # if (self.logr.index != self.risk.index).sum():
-        #     raise DataFrameError('"logr" and "risk" have different index')
-        # FIXME: is_datetime64_any_dtype(timestamp) is False
-        # if not (isinstance(self.first_reset_date, str) or
-        #         is_datetime64_any_dtype(self.first_reset_date)):
-        #     print('warning: "first_reset_date" should be string/datetime')
+        if len(self.logr) != int(self.corr.shape[0]/self.corr.shape[1]):
+            raise DataFrameError('"logr" and "corr" have different length')
         if isinstance(self.first_reset_date, str):
             self.first_reset_date = pd.to_datetime(self.first_reset_date)
+        try:
+            self.first_reset_date < self.logr.index[0]
+        except TypeError:
+            raise TypeError('first_reset_date is not a valid datetime type')
         if self.first_reset_date < self.logr.index[0]:
             raise DateValueError(
-                'the "first_reset_date" must be earlier than the first day'
+                'the "first_reset_date" must be later than the first day'
             )
         if not isinstance(self.reset_months, int):
             raise ValueError('"reset_months" should be int')
-        # TODO: add check for lenth of corr
 
     def useful_data(self):
         self.index = self.logr.index
