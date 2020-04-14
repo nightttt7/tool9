@@ -18,6 +18,7 @@ class RRP(object):
     (when ratio_fixed provided).
       - must input logr, reset_months.
       - if use FRP, input ratio_fixed.
+        - but if get_actual == True, risk is also needed
       - if use RRP, input risk, corr(more than 2 assets, UnfinishedFeature).
       - if use fixed leverate, input leverage_fixed.
       - if have target risk, input target_risk, risk and corr.

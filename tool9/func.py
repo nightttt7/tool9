@@ -1,4 +1,4 @@
-__all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'var', 'es',
+__all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'var', 'es', 'drawdown',
            'maxdrawdown', 'performance', 'portfolio_risk', 'period_4_plot']
 
 
