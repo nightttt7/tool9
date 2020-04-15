@@ -1,5 +1,6 @@
-__all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'var', 'es', 'drawdown',
-           'maxdrawdown', 'performance', 'portfolio_risk', 'period_4_plot']
+__all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'srf', 'var', 'es',
+           'drawdown', 'maxdrawdown', 'performance', 'portfolio_risk',
+           'period_4_plot']
 
 
 # ----------------------------------------------------------------------------
@@ -83,7 +84,18 @@ def sr(lr):
     import numpy as np
     s = lr.std()
     r = np.exp(lr)-1
-    t = r.mean()/s*np.sqrt(252)
+    t = (r.mean()/s)*np.sqrt(252)
+    return t
+
+
+# function srf (yearly sharpe ratio (no risk free rate) for returns)
+# use risk-free rate to get the excess return
+# (not log returns here)
+def srf(lr, rf):
+    import numpy as np
+    s = lr.std()
+    r = np.exp(lr)-1
+    t = ((r.mean()-rf.mean())/s)*np.sqrt(252)
     return t
 
 

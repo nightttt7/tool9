@@ -21,6 +21,8 @@ class RRP(object):
         - but if get_actual == True, risk is also needed
       - if use RRP, input risk, corr(more than 2 assets, UnfinishedFeature).
       - if use fixed leverate, input leverage_fixed.
+      - if use kelly formula to get leverage, let usekelly = True.
+        - then rf_rolling and r_rolling must provided
       - if have target risk, input target_risk, risk and corr.
       - first_reset_date and leverage_limit is optional.
       - use new_[input] to renew input and construct new portfolio.
@@ -44,6 +46,11 @@ class RRP(object):
           will be set so that portfolio risk will equal to the target_risk.
       - leverage_fixed: number, !!if provided, the leverage of portfolio will
           not change and always be it.
+      - usekelly: use Kelly formula to get leverage if True, default False
+      - rf_rolling: rolling mean risk-free rate, to apply Kelly formula and
+          get the leverage
+      - r_rolling: rolling mean return (not log return) of assets, to apply
+          Kelly formula and get the leverage
       - leverage_limit: number, if provided, leverage won't be higher than it.
       - get_actual: default False, get actual ratio, portfolio risk and actual
           portfolio risk.
@@ -79,6 +86,9 @@ class RRP(object):
         self.reset_shift_mode = 'after'
         self.target_risk = None
         self.leverage_fixed = None
+        self.usekelly = False
+        self.rf_rolling = None
+        self.r_rolling = None
         self.leverage_limit = None
         self.get_actual = False
         # generated useful values
@@ -132,6 +142,12 @@ class RRP(object):
             self.leverage_fixed = kw['leverage_fixed']
         if 'leverage_limit' in kw:
             self.leverage_limit = kw['leverage_limit']
+        if 'usekelly' in kw:
+            self.usekelly = kw['usekelly']
+        if 'rf_rolling' in kw:
+            self.rf_rolling = kw['rf_rolling']
+        if 'r_rolling' in kw:
+            self.r_rolling = kw['r_rolling']
         if 'get_actual' in kw:
             self.get_actual = kw['get_actual']
 
@@ -165,6 +181,12 @@ class RRP(object):
             )
         if not isinstance(self.reset_months, int):
             raise ValueError('"reset_months" should be int')
+        if not isinstance(self.usekelly, bool):
+            raise ValueError('"usekelly" should be bool')
+        if self.usekelly:
+            if (self.rf_rolling is None) | (self.r_rolling is None):
+                e = '"rf_rolling" or "r_rolling" must provided if usekelly'
+                raise ValueError(e)
 
     def useful_data(self):
         self.index = self.logr.index
@@ -240,6 +262,24 @@ class RRP(object):
 
     def new_leverage_fixed(self, change):
         self.leverage_fixed = change
+        self.check_inputs()
+        self.useful_data()
+        self.construct()
+
+    def new_usekelly(self, change):
+        self.usekelly = change
+        self.check_inputs()
+        self.useful_data()
+        self.construct()
+
+    def new_rf_rolling(self, change):
+        self.rf_rolling = change
+        self.check_inputs()
+        self.useful_data()
+        self.construct()
+
+    def new_r_rolling(self, change):
+        self.r_rolling = change
         self.check_inputs()
         self.useful_data()
         self.construct()
@@ -350,8 +390,21 @@ class RRP(object):
 
     def get_leverage(self):
         leverage = pd.DataFrame(index=self.index)
+        # different leverage setting
         if self.leverage_fixed:
             leverage['leverage'] = self.leverage_fixed
+        elif self.usekelly:
+            leverage['leverage'] = np.NaN
+            for a_reset_date in self.reset_date:
+                leverage.loc[a_reset_date] = (
+                    ((self.r_rolling.loc[a_reset_date] *
+                      self.ratio.loc[a_reset_date]).sum() -
+                     self.rf_rolling.loc[a_reset_date])[0] * 250 /
+                    portfolio_risk(data_corr=self.corr.loc[a_reset_date],
+                                   data_vol=self.risk.loc[a_reset_date],
+                                   data_ratio=self.ratio.loc[a_reset_date])**2
+                )
+            leverage.ffill(inplace=True)
         elif self.target_risk:
             leverage['leverage'] = np.NaN
             for a_reset_date in self.reset_date:
@@ -363,6 +416,7 @@ class RRP(object):
             leverage.ffill(inplace=True)
         else:
             leverage['leverage'] = 1
+        # apply the limit of leverage
         if self.leverage_limit:
             leverage.loc[leverage['leverage'] > self.leverage_limit] = (
                 self.leverage_limit
