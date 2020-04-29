@@ -67,10 +67,8 @@ def ni(col, data):
 # those functions is about the performance of log returns
 
 # lr: log returns of protfolio, main input.
-#     because of the characteristic of logarithm,
-#     all the performances reflect the relatively performances in log returns,
-#     but not absolute performances.
-# most functions return a singgle number value
+# because of the characteristic of logarithm, profit, var and es
+#   reflect the relatively performances in log returns
 
 # function profit (sum log return)
 def profit(lr):
@@ -116,20 +114,26 @@ def es(lr, *level):
     return t
 
 
-# function drawdown (cumulative log returns drawdown)
+# function drawdown (percentage drawdown)
+# (not log returns here)
 # attention: only this function returns a series
 def drawdown(lr):
+    import numpy as np
     clr = lr.cumsum()
     cummax = clr.cummax()
     t = clr-cummax
+    t = np.exp(t)-1
     return t
 
 
-# function maxdrawdown (maximum cumulative log returns drawdown)
+# function maxdrawdown (max percentage drawdown)
+# (not log returns here)
 def maxdrawdown(lr):
+    import numpy as np
     clr = lr.cumsum()
     cummax = clr.cummax()
     t = (clr-cummax).min()
+    t = np.exp(t)-1
     return t
 
 

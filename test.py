@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_datetime64_any_dtype
 from pathlib import Path
-from tool9 import RRP, period, es, performance, portfolio_risk, period_4_plot
+from tool9 import (RRP, period, es, performance, portfolio_risk, period_4_plot,
+                   drawdown, maxdrawdown)
 
 test_data_path = Path('test_data/')
 
@@ -50,3 +51,9 @@ p = RRP(ratio_fixed=None, logr=logr, risk=risk, corr=corr,
 p.leverage.plot()
 
 # %%
+# test functions drawdown and maxdrawdown
+lr = pd.read_csv(test_data_path / 'testdata-logr.csv',
+                 parse_dates=['Date'], index_col='Date')['rs']
+
+drawdown(lr)
+maxdrawdown(lr)
