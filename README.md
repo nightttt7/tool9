@@ -9,7 +9,7 @@ based on the codes for master thesis:
 provides
 ------
 classes
-  - RRP: construct a risk parity portfolio.
+  - RRP: construct a risk parity portfolio. (Typo, should be RPP but not RRP)
 functions
   - period: return the effective date period of one column
   - describe: return basic statistical descriptions
@@ -20,7 +20,7 @@ functions
 # class RRP
 
 ```
-construct a risk parity portfolio.
+construct a risk parity portfolio. (Typo, should be RPP but not RRP)
 
 construct a risk parity portfolio ('RPP') or fixed ratio portfolio ('FRP')
 (when ratio_fixed provided).
