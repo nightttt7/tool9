@@ -12,7 +12,7 @@ from .customized_exceptions import (DataFrameError, InputError, DateValueError,
 
 class RRP(object):
     """
-    construct a risk parity portfolio.
+    construct a risk parity portfolio. (Typo, should be RPP but not RRP)
 
     construct a risk parity portfolio ('RPP') or fixed ratio portfolio ('FRP')
     (when ratio_fixed provided).
@@ -66,9 +66,10 @@ class RRP(object):
       - ratio_actual: actual ratio of assets, pd.DataFrame with column name be
           asset name, index be datetime.
       - risk_p: portfolio risk, pd.DataFrame with column name be 'portfolio',
-          index be datetime.
+          index be datetime. (expected risk, use corr, vol and ratio of reset)
       - risk_p_actual: actual portfolio risk, pd.DataFrame with column name be
-          'portfolio', index be datetime.
+          'portfolio', index be datetime. (still expected risk, but more real,
+          use rolling corr, vol and real ratio)
       - leverage: leverage of portfolio, pd.DataFrame with column name be
           'leverage', index be datetime.
     """
