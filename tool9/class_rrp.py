@@ -23,7 +23,8 @@ class RRP(object):
       - if use fixed leverate, input leverage_fixed.
       - if use kelly formula to get leverage, let usekelly = True.
         - then rf_rolling and r_rolling must provided
-      - if have target risk, input target_risk, risk and corr.
+      - if use target risk, input target_risk, risk and corr.
+      - if use target return, input target_return and rolling_return
       - first_reset_date and leverage_limit is optional.
       - use new_[input] to renew input and construct new portfolio.
 
@@ -42,14 +43,18 @@ class RRP(object):
       - reset_months: int, number of months between two reset date.
       - reset_shift_mode: determine whether take the first trading day after or
           before the planed reset date as real reset date.
-      - target_risk: int, if target_risk is provided, the leverage of portfolio
-          will be set so that portfolio risk will equal to the target_risk.
+      - target_risk: number, if target_risk is provided, the leverage of
+          portfolio will be set so that portfolio risk will equal to the
+          target_risk.
+      - target_return: number, if target_return is provided, the leverage
+          of portfolio will be set so that portfolio expected return will equal
+          to the target_return. it's a yearly log return.
       - leverage_fixed: number, !!if provided, the leverage of portfolio will
           not change and always be it.
       - usekelly: use Kelly formula to get leverage if True, default False
-      - rf_rolling: rolling mean risk-free rate, to apply Kelly formula and
+      - rf_rolling: rolling yearly risk-free rate, to apply Kelly formula and
           get the leverage
-      - r_rolling: rolling mean return (not log return) of assets, to apply
+      - r_rolling: rolling yearly return (not log return) of assets, to apply
           Kelly formula and get the leverage
       - leverage_limit: number, if provided, leverage won't be higher than it.
       - get_actual: default False, get actual ratio, portfolio risk and actual
@@ -86,6 +91,7 @@ class RRP(object):
         self.reset_months = 12
         self.reset_shift_mode = 'after'
         self.target_risk = None
+        self.target_return = None
         self.leverage_fixed = None
         self.usekelly = False
         self.rf_rolling = None
@@ -139,6 +145,8 @@ class RRP(object):
             self.reset_shift_mode = kw['reset_shift_mode']
         if 'target_risk' in kw:
             self.target_risk = kw['target_risk']
+        if 'target_return' in kw:
+            self.target_return = kw['target_return']
         if 'leverage_fixed' in kw:
             self.leverage_fixed = kw['leverage_fixed']
         if 'leverage_limit' in kw:
@@ -257,6 +265,12 @@ class RRP(object):
 
     def new_target_risk(self, change):
         self.target_risk = change
+        self.check_inputs()
+        self.useful_data()
+        self.construct()
+
+    def new_target_return(self, change):
+        self.target_return = change
         self.check_inputs()
         self.useful_data()
         self.construct()
@@ -400,7 +414,7 @@ class RRP(object):
                 leverage.loc[a_reset_date] = (
                     ((self.r_rolling.loc[a_reset_date] *
                       self.ratio.loc[a_reset_date]).sum() -
-                     self.rf_rolling.loc[a_reset_date])[0] * 250 /
+                     self.rf_rolling.loc[a_reset_date])[0] /
                     portfolio_risk(data_corr=self.corr.loc[a_reset_date],
                                    data_vol=self.risk.loc[a_reset_date],
                                    data_ratio=self.ratio.loc[a_reset_date])**2
@@ -414,6 +428,13 @@ class RRP(object):
                                    data_vol=self.risk.loc[a_reset_date],
                                    data_ratio=self.ratio.loc[a_reset_date])
                 )
+            leverage.ffill(inplace=True)
+        elif self.target_return:
+            leverage['leverage'] = np.NaN
+            for a_reset_date in self.reset_date:
+                leverage.loc[a_reset_date] = np.exp(self.target_return - (
+                    self.r_rolling.loc[a_reset_date] *
+                    self.ratio.loc[a_reset_date]).sum())
             leverage.ffill(inplace=True)
         else:
             leverage['leverage'] = 1
