@@ -459,7 +459,7 @@ class RRP(object):
         r_actual_cum = (np.exp(logr_cum)-1)*self.ratio*leverage_tmp
         # check if out of money
         if (r_actual_cum.sum(axis=1) < -1).sum() > 0:
-            raise ValueError(
+            print(
                 'one asset out of money, please reduce leverage or set a limit'
             )
         # get cumulative portfolio log return in one reset period
