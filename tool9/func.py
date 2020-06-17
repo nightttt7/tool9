@@ -1,6 +1,6 @@
 __all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'srf', 'var', 'es',
-           'drawdown', 'maxdrawdown', 'performance', 'portfolio_risk',
-           'period_4_plot']
+           'drawdown', 'avedrawdown', 'maxdrawdown', 'performance',
+           'portfolio_risk', 'period_4_plot', 'performance1']
 
 
 # ----------------------------------------------------------------------------
@@ -66,7 +66,8 @@ def ni(col, data):
 
 # those functions is about the performance of log returns
 
-# lr: log returns of protfolio, main input.
+# lr: log returns, main input.
+# lrf: log risk free rate
 # because of the characteristic of logarithm, profit, var and es
 #   reflect the relatively performances in log returns
 
@@ -89,27 +90,29 @@ def sr(lr):
 # function srf (yearly sharpe ratio (no risk free rate) for returns)
 # use risk-free rate to get the excess return
 # (not log returns here)
-def srf(lr, rf):
+def srf(lr, lrf):
     import numpy as np
     s = lr.std()
     r = np.exp(lr)-1
+    rf = np.exp(lrf)-1
     t = ((r.mean()-rf.mean())/s)*np.sqrt(252)
     return t
 
 
 # function var (value at risk for log returns)
-# with confindence level = level (default 0.95)
-def var(lr, *level):
+# with confindence level 0.95
+def var(lr):
     import numpy as np
-    n = int(np.ceil(lr.count()*level[0]))
+    n = int(np.ceil(lr.count()*0.95))
     t = lr.sort_values(ascending=False)[n-1]
     return t
 
 
 # function es (expected shortfall for log returns)
-def es(lr, *level):
+# with confindence level 0.95
+def es(lr):
     import numpy as np
-    n = int(np.ceil(lr.count()*level[0]))
+    n = int(np.ceil(lr.count()*0.95))
     t = lr.sort_values(ascending=False)[n-1:].mean()
     return t
 
@@ -126,6 +129,12 @@ def drawdown(lr):
     return t
 
 
+# function average drawdown
+def avedrawdown(lr):
+    t = drawdown(lr).mean()
+    return t
+
+
 # function maxdrawdown (max percentage drawdown)
 # (not log returns here)
 def maxdrawdown(lr):
@@ -138,11 +147,21 @@ def maxdrawdown(lr):
 
 
 # function performance (all the performances for log returns)
-def performance(lr, level):
+def performance(lr):
     import pandas as pd
-    t = pd.DataFrame([profit(lr), sr(lr), var(lr, level), es(lr, level),
+    t = pd.DataFrame([profit(lr), sr(lr), var(lr), es(lr),
                       maxdrawdown(lr)])
     t.index = ['profit', 'sharpe ratio', 'VaR', 'ES', 'maxdrawdown']
+    t.columns = ['performance']
+    return t.T
+
+
+# function performance (all the performances for log returns)
+def performance1(lr, lrf):
+    import pandas as pd
+    t = pd.DataFrame([profit(lr), avedrawdown(lr), srf(lr, lrf), var(lr),
+                      es(lr), maxdrawdown(lr)])
+    t.index = ['Log return', 'Avg.  DD', 'Sharpe ratio', 'VaR', 'ES', 'MDD']
     t.columns = ['performance']
     return t.T
 # ----------------------------------------------------------------------------

@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_datetime64_any_dtype
 from pathlib import Path
-from tool9 import (RRP, period, es, performance, portfolio_risk, period_4_plot,
-                   drawdown, maxdrawdown)
+from tool9 import (RRP, period, var, es, sr, srf, avedrawdown, performance1,
+                   portfolio_risk, period_4_plot, drawdown, maxdrawdown)
 
 test_data_path = Path('test_data/')
 
@@ -74,3 +74,12 @@ lr = pd.read_csv(test_data_path / 'testdata-logr.csv',
 
 drawdown(lr)
 maxdrawdown(lr)
+
+# %% new performance
+dataset3 = pd.read_csv(test_data_path / "dataset3.csv", parse_dates=['Date'],
+                       index_col='Date')
+
+performance1(dataset3['rs'], dataset3['rf'])
+performance1(dataset3['rb'], dataset3['rf'])
+
+# %%
