@@ -1,6 +1,6 @@
-__all__ = ['period', 'describe', 'ni', 'profit', 'sr', 'srf', 'var', 'es',
-           'drawdown', 'avedrawdown', 'maxdrawdown', 'performance',
-           'portfolio_risk', 'period_4_plot', 'performance1']
+__all__ = ['period', 'describe', 'ni', 'yearlyreturn', 'exesssyearlyreturn',
+           'sr', 'srf', 'var', 'es', 'drawdown', 'avedrawdown', 'maxdrawdown',
+           'portfolio_risk', 'period_4_plot', 'performance', 'performance1']
 
 
 # ----------------------------------------------------------------------------
@@ -71,9 +71,16 @@ def ni(col, data):
 # because of the characteristic of logarithm, profit, var and es
 #   reflect the relatively performances in log returns
 
-# function profit (sum log return)
-def profit(lr):
-    t = lr.sum()
+
+# function yearlyreturn
+def yearlyreturn(lr):
+    t = lr.mean()*252
+    return t
+
+
+# function exesssyearlyreturn
+def exesssyearlyreturn(lr, lrf):
+    t = (lr.mean()-lrf.mean())*252
     return t
 
 
@@ -144,9 +151,9 @@ def maxdrawdown(lr):
 # function performance (all the performances for log returns)
 def performance(lr):
     import pandas as pd
-    t = pd.DataFrame([profit(lr), sr(lr), var(lr), es(lr),
+    t = pd.DataFrame([yearlyreturn(lr), sr(lr), var(lr), es(lr),
                       maxdrawdown(lr)])
-    t.index = ['profit', 'sharpe ratio', 'VaR', 'ES', 'maxdrawdown']
+    t.index = ['yearly return', 'sharpe ratio', 'VaR', 'ES', 'maxdrawdown']
     t.columns = ['performance']
     return t.T
 
@@ -154,9 +161,10 @@ def performance(lr):
 # function performance (all the performances for log returns)
 def performance1(lr, lrf):
     import pandas as pd
-    t = pd.DataFrame([profit(lr), avedrawdown(lr), srf(lr, lrf), var(lr),
-                      es(lr), maxdrawdown(lr)])
-    t.index = ['Log return', 'Avg.  DD', 'Sharpe ratio', 'VaR', 'ES', 'MDD']
+    t = pd.DataFrame([exesssyearlyreturn(lr, lrf), srf(lr, lrf), var(lr),
+                      es(lr), avedrawdown(lr), maxdrawdown(lr)])
+    t.index = ['annualized excess return', 'Sharpe ratio',
+               'VaR', 'ES', 'Avg.  DD', 'MDD']
     t.columns = ['performance']
     return t.T
 # ----------------------------------------------------------------------------

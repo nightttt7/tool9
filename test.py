@@ -1,3 +1,4 @@
+# %%
 # manual test
 
 # %%
@@ -5,8 +6,7 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_datetime64_any_dtype
 from pathlib import Path
-from tool9 import (RRP, period, var, es, sr, srf, avedrawdown, performance1,
-                   portfolio_risk, period_4_plot, drawdown, maxdrawdown)
+from tool9 import (RRP, performance1, drawdown, maxdrawdown)
 
 test_data_path = Path('test_data/')
 
