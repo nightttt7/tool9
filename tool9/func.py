@@ -77,25 +77,20 @@ def profit(lr):
     return t
 
 
-# function sr (yearly sharpe ratio (no risk free rate) for returns)
-# (not log returns here)
+# function sr (yearly sharpe ratio (no risk free rate) for log returns)
 def sr(lr):
     import numpy as np
     s = lr.std()
-    r = np.exp(lr)-1
-    t = (r.mean()/s)*np.sqrt(252)
+    t = (lr.mean()/s)*np.sqrt(252)
     return t
 
 
-# function srf (yearly sharpe ratio (no risk free rate) for returns)
-# use risk-free rate to get the excess return
-# (not log returns here)
+# function srf (yearly sharpe ratio for (excess) log returns)
+# use log risk-free rate to get the excess return
 def srf(lr, lrf):
     import numpy as np
-    s = lr.std()
-    r = np.exp(lr)-1
-    rf = np.exp(lrf)-1
-    t = ((r.mean()-rf.mean())/s)*np.sqrt(252)
+    s = (lr-lrf).std()
+    t = ((lr.mean()-lrf.mean())/s)*np.sqrt(252)
     return t
 
 
