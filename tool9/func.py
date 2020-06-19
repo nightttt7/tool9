@@ -1,6 +1,8 @@
-__all__ = ['period', 'describe', 'ni', 'yearlyreturn', 'exesssyearlyreturn',
-           'sr', 'srf', 'var', 'es', 'drawdown', 'avedrawdown', 'maxdrawdown',
-           'portfolio_risk', 'period_4_plot', 'performance', 'performance1']
+__all__ = ['period', 'describe', 'ni', 'yearlyreturn', 'yearlyreturnm',
+           'exesssyearlyreturn', 'exesssyearlyreturnm', 'sr', 'srm', 'srf',
+           'srfm', 'var', 'es', 'drawdown', 'avedrawdown', 'maxdrawdown',
+           'portfolio_risk', 'period_4_plot', 'performance', 'performance1',
+           'performance2']
 
 
 # ----------------------------------------------------------------------------
