@@ -78,9 +78,21 @@ def yearlyreturn(lr):
     return t
 
 
+# function yearlyreturnm
+def yearlyreturnm(lr):
+    t = lr.mean()*12
+    return t
+
+
 # function exesssyearlyreturn
 def exesssyearlyreturn(lr, lrf):
     t = (lr.mean()-lrf.mean())*252
+    return t
+
+
+# function exesssyearlyreturnm
+def exesssyearlyreturnm(lr, lrf):
+    t = (lr.mean()-lrf.mean())*12
     return t
 
 
@@ -92,12 +104,28 @@ def sr(lr):
     return t
 
 
+# function srm
+def srm(lr):
+    import numpy as np
+    s = lr.std()
+    t = (lr.mean()/s)*np.sqrt(12)
+    return t
+
+
 # function srf (yearly sharpe ratio for (excess) log returns)
 # use log risk-free rate to get the excess return
 def srf(lr, lrf):
     import numpy as np
     s = (lr-lrf).std()
     t = ((lr.mean()-lrf.mean())/s)*np.sqrt(252)
+    return t
+
+
+# function srfm
+def srfm(lr, lrf):
+    import numpy as np
+    s = (lr-lrf).std()
+    t = ((lr.mean()-lrf.mean())/s)*np.sqrt(12)
     return t
 
 
@@ -148,7 +176,7 @@ def maxdrawdown(lr):
     return t
 
 
-# function performance (all the performances for log returns)
+# function performance
 def performance(lr):
     import pandas as pd
     t = pd.DataFrame([yearlyreturn(lr), sr(lr), var(lr), es(lr),
@@ -158,10 +186,21 @@ def performance(lr):
     return t.T
 
 
-# function performance (all the performances for log returns)
+# function performance1
 def performance1(lr, lrf):
     import pandas as pd
     t = pd.DataFrame([exesssyearlyreturn(lr, lrf), srf(lr, lrf), var(lr),
+                      es(lr), avedrawdown(lr), maxdrawdown(lr)])
+    t.index = ['annualized excess return', 'Sharpe ratio',
+               'VaR', 'ES', 'Avg.  DD', 'MDD']
+    t.columns = ['performance']
+    return t.T
+
+
+# function performance2
+def performance2(lr, lrf):
+    import pandas as pd
+    t = pd.DataFrame([exesssyearlyreturnm(lr, lrf), srfm(lr, lrf), var(lr),
                       es(lr), avedrawdown(lr), maxdrawdown(lr)])
     t.index = ['annualized excess return', 'Sharpe ratio',
                'VaR', 'ES', 'Avg.  DD', 'MDD']
